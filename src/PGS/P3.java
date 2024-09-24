@@ -18,32 +18,59 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class P3 {
-    public static String[] solution(String[] intStrs, int k, int s, int l){
-        ArrayList<String> result = new ArrayList<>();
+    public static int[] solution(String[] intStrs, int k, int s, int l) {
+        ArrayList<Integer> result = new ArrayList<>();
         
-        for(String str : intStrs){
-            // s부터 s+l까지의 부분 문자열 추출
-            String subStr = str.substring(s, s+l);
+        for (String str : intStrs) {
             
-            // 문자열을 정수로 변환
+            String subStr = str.substring(s, s + l);
+            
+          
             int num = Integer.parseInt(subStr);
             
-            // k보다 큰 경우 결과 리스트에 추가
-            if(num > k){
-                result.add(subStr);
+          
+            if (num > k) {
+                result.add(num);
             }
         }
         
-        // ArrayList를 배열로 변환하여 반환
-        return result.toArray(new String[0]);
+        //int[] 로 변환
+        int[] answer = new int[result.size()];
+        for (int i = 0; i < result.size(); i++) {
+            answer[i] = result.get(i);
+        }
+        
+        return answer;
     }
+
+    public static ArrayList<Integer> solution2(String[] intStrs, int k, int s, int l) {
+        ArrayList<Integer> result = new ArrayList<>();
+        
+        for (String str : intStrs) {
+            
+            String subStr = str.substring(s, s + l);
+            
+            
+            int num = Integer.parseInt(subStr);
+            
+            if (num > k) {
+                result.add(num);
+            }
+        }
+        
+        return result;
+    }
+
     public static void main(String[] args) {
         String[] intStrs = {"0123456789","9876543210","9999999999999"};
         int k = 50000;
         int s = 5;
         int l = 5;
-        String[] result = solution(intStrs, k, s, l);
+        int[] result = solution(intStrs, k, s, l);
+        ArrayList<Integer> result2 =solution2(intStrs, k, s, l);
         System.out.println(Arrays.toString(result));
+        System.out.println(result2);
+
 
     }
 }
