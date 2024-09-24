@@ -1,4 +1,4 @@
-package PGS;
+
 /*
  * 문자열 배열 intStrs와 정수 k, s, l가 주어집니다. intStrs의 원소는 숫자로 이루어져 있습니다.
 
