@@ -1,0 +1,15 @@
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\bin\Debug\net8.0\StartApp.exe
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\bin\Debug\net8.0\StartApp.deps.json
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\bin\Debug\net8.0\StartApp.runtimeconfig.json
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\bin\Debug\net8.0\StartApp.dll
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\bin\Debug\net8.0\StartApp.pdb
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\obj\Debug\net8.0\StartApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\obj\Debug\net8.0\StartApp.AssemblyInfoInputs.cache
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\obj\Debug\net8.0\StartApp.AssemblyInfo.cs
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\obj\Debug\net8.0\StartApp.csproj.CoreCompileInputs.cache
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\obj\Debug\net8.0\StartApp.sourcelink.json
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\obj\Debug\net8.0\StartApp.dll
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\obj\Debug\net8.0\refint\StartApp.dll
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\obj\Debug\net8.0\StartApp.pdb
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\obj\Debug\net8.0\StartApp.genruntimeconfig.cache
+C:\SW-School\AutoEver-SW-Mobility-School\c#\StartApp\obj\Debug\net8.0\ref\StartApp.dll
