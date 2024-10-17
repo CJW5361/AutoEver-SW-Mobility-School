@@ -1,0 +1,211 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>제주도 방언 퀴즈</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .hidden {
+            display: none;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center mb-8 text-indigo-600">제주도 방언 퀴즈</h1>
+        
+        <!-- 시작 화면 -->
+        <div id="start-screen" class="text-center">
+            <p class="text-xl mb-6">제주도 방언의 뜻을 맞춰보세요!</p>
+            <button id="start-button" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition">
+                퀴즈 시작하기
+            </button>
+        </div>
+
+        <!-- 퀴즈 화면 -->
+<div id="quiz-screen" class="hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
+        <div class="flex justify-between mb-4">
+            <span class="text-lg font-semibold">문제 <span id="current-question">1</span>/<span id="total-questions">5</span></span>
+            <span class="text-lg font-semibold">점수: <span id="score">0</span></span>
+        </div>
+
+        <div class="mb-6">
+            <h2 class="text-2xl font-bold mb-4 text-center" id="dialect-text"></h2>
+            <div class="flex justify-center space-x-4 mb-4">
+                <button id="hint-button" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition">
+                    발음 듣기 🔊
+                </button>
+                <audio id="hint-audio" class="hidden"></audio>
+            </div>
+        </div>
+
+        <div class="mb-6">
+            <input type="text" id="answer-input" 
+                   class="w-full p-3 border border-gray-300 rounded focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                   placeholder="표준어를 입력하세요">
+        </div>
+
+        <button id="submit-button" class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition">
+            정답 제출
+        </button>
+
+        <div id="feedback" class="mt-4 text-center hidden"></div>
+    </div>
+</div>
+
+        <!-- 결과 화면 -->
+        <div id="result-screen" class="hidden text-center">
+            <div class="bg-white rounded-lg shadow-lg p-6 max-w-2xl mx-auto">
+                <h2 class="text-3xl font-bold mb-4">퀴즈 완료!</h2>
+                <p class="text-xl mb-4">최종 점수: <span id="final-score">0</span>/<span id="max-score">10</span></p>
+                <div id="result-message" class="text-lg mb-6"></div>
+                <button id="retry-button" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition">
+                    다시 도전하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let usedHint = false;
+
+        document.getElementById('start-button').addEventListener('click', startQuiz);
+        document.getElementById('submit-button').addEventListener('click', submitAnswer);
+        document.getElementById('hint-button').addEventListener('click', playHint);
+        document.getElementById('retry-button').addEventListener('click', () => {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('start-screen').classList.remove('hidden');
+        });
+
+        document.getElementById('answer-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                submitAnswer();
+            }
+        });
+
+        function startQuiz() {
+            fetch('/start_quiz', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Start quiz response:", data);  // 디버깅을 위한 로그 추가
+                if (data.success) {
+                    document.getElementById('start-screen').classList.add('hidden');
+                    document.getElementById('quiz-screen').classList.remove('hidden');
+                    updateQuestion(data.question);
+                    document.getElementById('total-questions').textContent = data.total_questions;
+                    document.getElementById('current-question').textContent = '1';
+                    document.getElementById('score').textContent = '0';
+                    usedHint = false;
+                } else {
+                    console.error('퀴즈 시작 실패:', data.error);
+                    alert('퀴즈를 시작하는 데 문제가 발생했습니다. 다시 시도해 주세요.');
+                }
+            })
+            .catch(error => {
+                console.error('퀴즈 시작 중 오류 발생:', error);
+                alert('서버와 통신 중 오류가 발생했습니다. 다시 시도해 주세요.');
+            });
+        }
+
+        function updateQuestion(question) {
+            console.log("Updating question:", question);  // 디버깅을 위한 로그 추가
+            document.getElementById('dialect-text').textContent = question.dialect || '데이터 없음';
+            document.getElementById('hint-audio').src = question.sound_url || '';
+            document.getElementById('answer-input').value = '';
+            document.getElementById('feedback').classList.add('hidden');
+            usedHint = false;
+        }
+
+        function playHint() {
+            const audio = document.getElementById('hint-audio');
+            audio.playbackRate = 1;  // 배속 설정 (1.0은 일반 속도, 1.5는 1.5배속)
+            audio.play();
+            usedHint = true;
+        }
+
+        function submitAnswer() {
+            const answer = document.getElementById('answer-input').value;
+            
+            fetch('/check_answer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    answer: answer,
+                    used_hint: usedHint
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Submit answer response:", data);  // 디버깅을 위한 로그 추가
+                showFeedback(data);
+                
+                if (data.quiz_complete) {
+                    setTimeout(showResults, 1500, data);
+                } else if (data.next_question) {
+                    setTimeout(() => {
+                        updateQuestion(data.next_question);
+                        document.getElementById('current-question').textContent = 
+                            parseInt(document.getElementById('current-question').textContent) + 1;
+                        document.getElementById('score').textContent = data.score;
+                    }, 1500);
+                }
+            });
+        }
+
+        function showFeedback(data) {
+            const feedback = document.getElementById('feedback');
+            feedback.classList.remove('hidden');
+            feedback.classList.remove('text-green-600', 'text-red-600');
+            
+            if (data.is_correct) {
+                feedback.classList.add('text-green-600');
+                feedback.textContent = '정답입니다! 🎉';
+            } else {
+                feedback.classList.add('text-red-600');
+                feedback.textContent = `틀렸습니다. 정답은 '${data.correct_answer}' 입니다.`;
+            }
+        }
+
+        function showResults(data) {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').textContent = data.final_score;
+            document.getElementById('max-score').textContent = data.max_score;
+            
+            const percentage = (data.final_score / data.max_score) * 100;
+            let message = '';
+            
+            if (percentage >= 90) {
+                message = '🏆축하합니다! 제주도 방언 마스터입니다! 🏆';
+            } else if (percentage >= 70) {
+                message = '🌟잘하셨습니다! 제주도 방언 실력이 수준급이네요! 🌟';
+            } else if (percentage >= 50) {
+                message = '괜찮습니다! 조금만 더 공부하면 금방 늘 거예요! 📚';
+            } else {
+                message = '더 열심히 공부해봐요! 다음에는 더 잘할 수 있을 거예요! 💪💪💪';
+            }
+            
+            document.getElementById('result-message').textContent = message;
+        }
+    </script>
+</body>
+</html>

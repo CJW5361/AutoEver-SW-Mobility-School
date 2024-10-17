@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>약국 상세 정보</title>
+    <!-- ... (기존 스타일 유지) ... -->
+</head>
+<body>
+    <h1>약국 상세 정보</h1>
+    {% if pharmacy %}
+        <table>
+            <tr>
+                <th>약국명</th>
+                <td>{{ pharmacy.dutyName }}</td>
+            </tr>
+            <tr>
+                <th>주소</th>
+                <td>{{ pharmacy.dutyAddr }}</td>
+            </tr>
+            <tr>
+                <th>전화번호</th>
+                <td>{{ pharmacy.dutyTel1 }}</td>
+            </tr>
+        </table>
+
+        <h2>운영 시간</h2>
+        {% if pharmacy.operating_hours %}
+            <table>
+                {% for hour in pharmacy.operating_hours %}
+                    <tr>
+                        <td>{{ hour }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% else %}
+            <p>운영 시간 정보가 없습니다.</p>
+        {% endif %}
+
+        <h2>위치</h2>
+        <div id="map"> 
+            {{ map_html|safe }}
+        </div>
+    {% else %}
+        <p>약국 상세 정보를 불러오는 데 실패했습니다.</p>
+    {% endif %}
+    <a href="/">홈으로 돌아가기</a>
+
+    <!-- 디버깅 정보 -->
+    <h3>디버깅 정보</h3>
+    <pre>{{ pharmacy|pprint }}</pre>
+</body>
+</html>
