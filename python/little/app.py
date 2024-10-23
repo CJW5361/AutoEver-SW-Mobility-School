@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, jsonify, session
 from datetime import timedelta
 
 app = Flask(__name__)
-
+app.secret_key = 'your-secret-key-here'
 app.permanent_session_lifetime = timedelta(minutes=30)
 
 class JejuDialectQuiz:

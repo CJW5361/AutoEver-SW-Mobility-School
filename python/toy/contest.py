@@ -56,12 +56,14 @@ system_prompt = """당신은 다국어 데이터셋의 각 항목이 자동차 �
 4. 분류 방법:
    - 'title'과 'notes'를 주의 깊게 읽고 분석
    - 자동차/교통 관련: 1, 비관련: 0으로 표시
+   - 결과는 각 데이터 항목에 대해 0 또는 1로 응답해주세요.
 
 5. 주의사항:
    - 언어와 상관없이 일관된 기준 적용
    - 모호한 경우, 데이터의 주요 목적을 기준으로 판단
 
-각 항목에 대해 0 또는 1로 응답해주세요."""
+각 항목에 대해 신중하게 판단해 주세요. 총 {len(data)}개의 데이터에 대한 답변을 주세요.
+"""
 
 def create_user_prompt(data):
     user_prompt = f"다음 {len(data)}개의 데이터들이 자동차 관련 데이터인지 판별해주세요:\n\n"
@@ -85,17 +87,25 @@ def get_model_predictions(prompt, expected_count):
     )
     
     result = response.choices[0].message['content'].strip().split('\n')
-    # print(len(result))
-    if len(result) != expected_count:
-        print(f"경고: 예상된 응답 개수({expected_count})와 실제 응답 개수({len(result)})가 다릅니다.")
-        print("API 응답:", response.choices[0].message['content'])
-    # print(result)
-    def clean_result(r):
-        # 숫자만 추출합니다
-        return ''.join(filter(str.isdigit, r))
     
-    return [int(clean_result(r)) for r in result]
-    # return [int(r) for r in result]
+    # 결과를 0과 1로 변환하는 부분 수정
+    predictions = []
+    for r in result:
+        # 예측 결과가 '0' 또는 '1'로 되어 있는지 확인
+        if r.strip().isdigit():  # 숫자인 경우에만 추가
+            predictions.append(int(r.strip()))  # 예측 결과만 추가
+        else:
+            print(f"경고: 예측 결과가 숫자가 아닙니다: {r}")
+
+    # 예측값이 비어있을 경우 처리
+    if not predictions:
+        print("경고: API 응답이 비어있습니다. 예측값을 빈 리스트로 설정합니다.")
+        
+    if len(predictions) != expected_count:
+        print(f"경고: 예상된 응답 개수({expected_count})와 실제 응답 개수({len(predictions)})가 다릅니다.")
+        print("API 응답:", response.choices[0].message['content'])
+    
+    return predictions
 
 # Train 데이터 로드 및 테스트
 train_data = pd.read_csv('train.csv')
@@ -114,7 +124,7 @@ test_data = pd.read_csv('test.csv')
 # User 프롬프트 생성
 user_prompt = create_user_prompt(test_data)
 test_predictions=get_model_predictions(user_prompt,len(test_data))
-# print("예측값:", test_predictions)
+print("예측값:", test_predictions)
 print('길이',len(test_predictions))
 # 최종 제출 파일 생성
 submission = pd.DataFrame({
